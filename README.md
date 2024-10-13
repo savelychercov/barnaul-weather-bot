@@ -10,7 +10,7 @@ To deploy this project run
 
 ```bash
   git clone <url>
-  cd BarnaulWeatherBot
+  cd barnaul-weather-bot
 
   python -m venv venv
 
