@@ -127,9 +127,6 @@ def send_wearher_command(message):
         send_weather(message, 3)
 
 
-"""---------------------------------------------------------------------------------------"""
-
-
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
     if "update" in call.data:
