@@ -13,6 +13,12 @@ api_key = os.getenv("API_KEY")
 
 bot = telebot.TeleBot(api_key)
 
+commands_text = {
+    "tomorrow": ["Погода на завтра"],
+    "after_tomorrow": ["Погода на послезавтра"],
+    "after_after_tomorrow": ["Погода на сегодня"]
+}
+
 excuses = [
     "Погода не меряется...",
     "Градусник сломался, чиню...",
@@ -103,22 +109,20 @@ def log(text):
 
 @bot.message_handler(commands=['start', 'hello'])
 def send_welcome(message):
-    bot.reply_to(message, "Стартуем! Жми на комманду ↓")
+    kb = [{"text": commands_text[command][0]} for command in commands_text]
+    print(kb)
+    keyboard = buttons(kb, inline=False)
+    bot.reply_to(message, "Стартуем! Жми на комманду ↓", reply_markup=keyboard)
 
 
-@bot.message_handler(commands=["today"])
-def send_today_weather(ctx):
-    send_weather(ctx, "today")
-
-
-@bot.message_handler(commands=["tomorrow"])
-def generate_answer(ctx):
-    send_weather(ctx, "tomorrow")
-
-
-@bot.message_handler(commands=["aftertomorrow"])
-def generate_answer(ctx):
-    send_weather(ctx, "after_tomorrow")
+@bot.message_handler(content_types="text")
+def send_wearher_command(message):
+    if message.text == "Погода на завтра":
+        send_weather(message, "tomorrow")
+    elif message.text == "Погода на послезавтра":
+        send_weather(message, "after_tomorrow")
+    elif message.text == "Погода на сегодня":
+        send_weather(message, "today")
 
 
 """---------------------------------------------------------------------------------------"""
