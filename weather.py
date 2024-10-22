@@ -1,18 +1,15 @@
 import requests
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
-from typing import Literal
 
-days = {
-    "today": 3,
-    "tomorrow": 4,
-    "after_tomorrow": 5}
 
 URL = "https://www.meteo22.ru/"
 
 
-def get_weather(day: Literal["today", "tomorrow", "after_tomorrow"]):
-    current_day = days[day]
+def get_weather(day: int):
+    if day < 1 or day > 3:
+        return ["Err", "Day must be 1, 2 or 3"]
+    current_day = day+2
 
     agent = UserAgent().random
 
@@ -58,4 +55,4 @@ def get_weather(day: Literal["today", "tomorrow", "after_tomorrow"]):
 
 
 if __name__ == "__main__":
-    print(get_weather("today")[1])
+    print(get_weather(1)[1])

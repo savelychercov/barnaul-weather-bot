@@ -16,7 +16,7 @@ bot = telebot.TeleBot(api_key)
 commands_text = {
     "Погода на завтра",
     "Погода на послезавтра",
-    "Погода на сегодня"
+    "Погода на послепослезавтра",
 }
 
 excuses = [
@@ -31,7 +31,7 @@ excuses = [
 error_text = "Я устал и не хочу работать, возвращайтесь позже когда я отдохну"
 
 
-def edit_message(chat_id, message_id, day, reroll=False):
+def edit_message(chat_id: int, message_id: int, day: int, reroll=False):
     try:
         if reroll:
             bot.edit_message_text(
@@ -88,23 +88,25 @@ def edit_message(chat_id, message_id, day, reroll=False):
         )
 
 
-def send_weather(ctx, day: str):
+def send_weather(ctx, day: int):
     send = bot.send_message(
         ctx.chat.id,
         "Измеряю температуру на улице...🌡🌡🌡")
     edit_message(ctx.chat.id, send.message_id, day)
 
 
-logs_key = None  # If you want to send logs to your telegram log bot
-logs_id = "1234568790"  # Your telegram id
+logs_key = os.getenv("LOGS_KEY")  # If you want to send logs to your telegram log bot
+logs_id = os.getenv("LOGS_USER_ID")  # Your telegram id
 
 
 def log(text):
     print(text)
-    if logs_key is None: return
+    if logs_key is None or logs_id is None: return
     url = f"https://api.telegram.org/bot{logs_key}/sendMessage"
     params = {"chat_id": logs_id, "text": "Weather Telegram Bot: " + str(text), }
-    requests.post(url, params=params)
+    r = requests.post(url, params=params)
+    if r.status_code != 200:
+        print(r.text)
 
 
 @bot.message_handler(commands=['start', 'hello'])
@@ -118,11 +120,11 @@ def send_welcome(message):
 @bot.message_handler(content_types="text")
 def send_wearher_command(message):
     if message.text == "Погода на завтра":
-        send_weather(message, "tomorrow")
+        send_weather(message, 1)
     elif message.text == "Погода на послезавтра":
-        send_weather(message, "after_tomorrow")
-    elif message.text == "Погода на сегодня":
-        send_weather(message, "today")
+        send_weather(message, 2)
+    elif message.text == "Погода на послепослезавтра":
+        send_weather(message, 3)
 
 
 """---------------------------------------------------------------------------------------"""
