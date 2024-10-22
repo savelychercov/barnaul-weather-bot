@@ -7,6 +7,7 @@ from time import sleep
 import requests
 import dotenv
 
+logging = False
 
 dotenv.load_dotenv()
 api_key = os.getenv("API_KEY")
@@ -101,7 +102,7 @@ logs_id = os.getenv("LOGS_USER_ID")  # Your telegram id
 
 def log(text):
     print(text)
-    if logs_key is None or logs_id is None: return
+    if not logging or logs_key is None or logs_id is None: return
     url = f"https://api.telegram.org/bot{logs_key}/sendMessage"
     params = {"chat_id": logs_id, "text": "Weather Telegram Bot: " + str(text), }
     r = requests.post(url, params=params)
@@ -112,7 +113,6 @@ def log(text):
 @bot.message_handler(commands=['start', 'hello'])
 def send_welcome(message):
     kb = [{"text": command} for command in commands_text]
-    print(kb)
     keyboard = buttons(kb, inline=False)
     bot.reply_to(message, "Стартуем! Жми на комманду ↓", reply_markup=keyboard)
 
